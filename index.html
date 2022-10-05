@@ -3,14 +3,17 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
 function fetchImxVersions(){
+var proxy = 'https://thingproxy.freeboard.io/fetch/https://otl.prorail.nl/otl/app/info-en-updates/documentatie';
+var url = 'https://otl.prorail.nl/otl/app/info-en-updates/documentatie';
 	console.log('fetching IMX versions');
-	d3.html('https://otl.prorail.nl/otl/app/info-en-updates/documentatie',
-		function(html){
-			var body = d3.select('body');
-			var zipfiles = d3.selectAll('.cell document').select('span[title="xsd*.zip"]');
-			zipfiles.forEach(f => function(f){console.log(f.title)});
-		}
-	);
+	d3.html(url,{RequestMode: "no-cors"}).then(handleHtml);
+}
+
+function handleHtml(){
+	var body = d3.select('body');
+	var zipfiles = d3.selectAll('.cell document').select('span[title="xsd*.zip"]');
+	zipfiles.forEach(f => function(f){console.log(f.title)});
+
 }
 
 
