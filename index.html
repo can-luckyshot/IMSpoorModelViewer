@@ -3,6 +3,7 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
 function fetchImxVersions(){
+	console.log('fetching IMX versions');
 	d3.html('https://otl.prorail.nl/otl/app/info-en-updates/documentatie',
 		function(html){
 			var body = d3.select('body');
