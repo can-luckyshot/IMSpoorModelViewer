@@ -1,0 +1,29 @@
+<html>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+function fetchImxVersions(){
+	d3.html('https://otl.prorail.nl/otl/app/info-en-updates/documentatie',
+		function(html){
+			var body = d3.select('body');
+			var zipfiles = d3.selectAll('.cell document').select('span[title="xsd*.zip"]');
+			zipfiles.forEach(f => function(f){console.log(f.title)});
+		}
+	);
+}
+
+
+</script>
+<style>
+#diagram {
+  border: 2px solid blue;
+  width: 1950px;
+  height: 600px;
+}
+</style>
+<body>
+<div id="diagram" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+<p>Drop IMX files here</p>
+</div>
+</body>
+</html>
