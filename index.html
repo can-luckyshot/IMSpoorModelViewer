@@ -21,7 +21,7 @@ function fetchImxVersions(){
   height: 600px;
 }
 </style>
-<body>
+<body onload="fetchImxVersions();">
 <div id="diagram" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 <p>Drop IMX files here</p>
 </div>
