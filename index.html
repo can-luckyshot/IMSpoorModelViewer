@@ -3,10 +3,10 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
 function fetchImxVersions(){
-var proxy = 'https://thingproxy.freeboard.io/fetch/https://otl.prorail.nl/otl/app/info-en-updates/documentatie';
+var proxy = 'https://thingproxy.freeboard.io/fetch/';
 var url = 'https://otl.prorail.nl/otl/app/info-en-updates/documentatie';
 	console.log('fetching IMX versions');
-	d3.html(url,{RequestMode: "no-cors"}).then(handleHtml);
+	d3.html(proxy+url,{RequestMode: 'no-cors'}).then(handleHtml);
 }
 
 function handleHtml(){
