@@ -32,7 +32,8 @@ function generateModel(url){
     .then(function (zip) {
         var files = zip.file(/xsd/);
 		console.log("xsd's: "+files.length);
-		filesToProces = files.length;		
+		filesToProces = files.length;
+		initTreeModel();		
 		files.forEach(file => {
 			file.async("string").then(function success(text) {
 				var src = file.name;
@@ -66,6 +67,7 @@ body{
  align-items: stretch;
  flex-direction: row;
  height: 100%;
+ overflow-y: auto;
 }
 .nav{
  background-color: #f1f1f1;
@@ -94,6 +96,7 @@ body{
 .content{
  padding: 10px;
  flex: 4;
+ overflow-y: auto;
 }
 .footer{
   background-color: #666;
@@ -117,10 +120,7 @@ body{
 			<p>Selecteer een IMX versie om een overzicht van het model te genereren.</p>
 			<div id="diagram"></div>
 		</div>
-	</div>
-	<div class="footer">
-		<p>footer</p>
-	</div>
+	</div>	
 </div>
 </body>
 </html>

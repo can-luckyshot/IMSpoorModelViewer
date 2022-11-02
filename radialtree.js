@@ -150,7 +150,9 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
   // Compute labels and titles.
   const descendants = root.descendants();
   const L = label == null ? null : descendants.map(d => label(d.data, d));
-
+  radius = root.leaves().length * (r + haloWidth) * 1.0/ Math.PI;
+  width = radius + marginLeft + marginRight;
+  height = radius + marginBottom + marginTop;
   // Compute the layout.
   tree().size([2 * Math.PI, radius]).separation(separation)(root);
 
