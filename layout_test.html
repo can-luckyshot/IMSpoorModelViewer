@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+ 
+<head>
+    <title>
+        make a div fill remaining
+        horizontal space
+    </title>
+     
+    <!-- Style to fill remaining
+        horizontal space -->
+    <style>
+        #main {
+            height: 800px;            
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+        #left {
+            float: left;
+            width: 180px;
+            height: 100%;
+            background-color: green;
+        }
+        #right {
+            width: 100%;
+            height: 100%;
+            background-color: blue;
+        }
+		#piet {
+			background-color: grey;
+			border: 1px solid black;
+		}
+    </style>
+</head>    
+ 
+<body style = "text-align:center;">        
+    <div id = "main">
+        <div id="left">
+            DIV_1
+        </div>
+         
+        <div id="right">
+            <div id="piet">content</div>
+        </div>
+    </div>
+</body>
+ 
+</html>  

@@ -14,7 +14,7 @@ var tooltipDiv;
 
 function initTreeModel(){
 	console.log('init model');
-	div = d3.select("div.tooltip");	
+	tooltipDiv = d3.select("div.tooltip");	
 	var element = document.getElementById('diagram');
 	while(element.firstElementChild) {
 		element.firstElementChild.remove();
@@ -205,13 +205,13 @@ function buildChart(){
 
 function handleHover(event, d){		
 		const[x, y] = d3.pointer(event,d);
-		div.transition()
+		tooltipDiv.transition()
 			.duration(500)	
 			.style("opacity", 0);
-		div.transition()
+		tooltipDiv.transition()
 			.duration(200)	
 			.style("opacity", .9);	
-		div	.html(d.label)	 
+		tooltipDiv.html(d.label)	 
 			.style("left", (x) + "px")			 
 			.style("top", (y - 28) + "px");
 	  }
