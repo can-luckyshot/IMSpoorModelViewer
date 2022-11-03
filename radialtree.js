@@ -17,8 +17,7 @@ function initTreeModel(){
 
 function renderTree(){
 	console.log('render model');
-	[...roots].forEach((root)=>{
-		console.log('final root: '+root);
+	[...roots].forEach((root)=>{		
 		inheritLinks.push({id: root, parentId: 'root'});}
 	);
 	var imxTree = d3.stratify()(inheritLinks);
@@ -69,19 +68,19 @@ function handleXsdFile(xsdFile){
 
 function procesXsd(doc, src){	
 	var namedElements = doc.querySelectorAll('*[name]');
-	console.log([...namedElements].length + ' elements with name attribute');
+	//console.log([...namedElements].length + ' elements with name attribute');
 	[...namedElements].forEach((element)=> {
 		var extension = element.querySelector('extension');
 		if(extension){
-			console.log('inherit: ' + extension.attributes.base.value + ' <- ' + element.attributes.name.value);
+			//console.log('inherit: ' + extension.attributes.base.value + ' <- ' + element.attributes.name.value);
 			inheritLinks.push({id: element.attributes.name.value, parentId: extension.attributes.base.value});
 			notRoots.add(element.attributes.name.value);
 			if(roots.has(element.attributes.name.value)){
-				console.log('deleting: '+element.attributes.name.value);
+				//console.log('deleting: '+element.attributes.name.value);
 				roots.delete(element.attributes.name.value);				
 			}
 			if(!roots.has(extension.attributes.base.value) && !notRoots.has(extension.attributes.base.value)){
-				console.log('adding: '+extension.attributes.base.value);				
+				//console.log('adding: '+extension.attributes.base.value);				
 				roots.add(extension.attributes.base.value)				
 			}
 			
@@ -95,8 +94,6 @@ function procesXsd(doc, src){
 
 function dragOverHandler(ev) {
   console.log('File(s) in drop zone');
-
-  // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
 }
 
@@ -150,17 +147,17 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
   // Compute labels and titles.
   const descendants = root.descendants();
   const L = label == null ? null : descendants.map(d => label(d.data, d));
-  radius = root.leaves().length * (r + haloWidth) * 1.0/ Math.PI;
-  width = radius + marginLeft + marginRight;
-  height = radius + marginBottom + marginTop;
+  radius = root.leaves().length * (r + haloWidth) / Math.PI;
+  radius = Math.max(radius,200);
+  width = radius*2 + marginLeft + marginRight;
+  height = radius*2 + marginBottom + marginTop;
   // Compute the layout.
   tree().size([2 * Math.PI, radius]).separation(separation)(root);
 
   const svg = d3.create("svg")
-      .attr("viewBox", [-marginLeft - radius, -marginTop - radius, width, height])
+      .attr("viewBox", [-width/2, -height/2, width, height])
       .attr("width", width)
-      .attr("height", height)
-      .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+      .attr("height", height)      
       .attr("font-family", "sans-serif")
       .attr("font-size", 10);
 
