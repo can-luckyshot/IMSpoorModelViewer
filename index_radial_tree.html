@@ -1,4 +1,6 @@
 <html>
+<head>
+<link rel="stylesheet" href="modelviewer.css">
 <script src="radialtree.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -87,85 +89,7 @@ function renderModel(){
 	});
 }
 </script>
-<style>
-body{
- 
-}
-.container{
- display: flex;
- flex-direction: column;
- height: 100%;
-}
-
-.header{
-  background-color: #666;
-  text-align: center;
-  font-size: 35px;
-  color: white;
-}
-
-.main{
- display: flex;
- align-items: stretch;
- flex-direction: row;
- height: 100%;
- overflow: auto;
-}
-.content{
- padding: 10px;
- flex: 4;
- 
-}
-.nav{
- background-color: #f1f1f1;
- padding: 10px;
- flex: 1; 
-}
-.upload {
-  text-align: center;
-  margin: 4px;
-  padding: 6px;
-  background-color: #f1f1f1;
-  border: 3px solid lightsteelblue;
-  flex: 1;
-  height: 150px;
-  border-radius: 8px;
-}
-.file{
-  margin: 4px;
-  padding: 6px;
-  background-color: lightsteelblue;
-  border: 3px solid lightsteelblue;
-  border-radius: 8px;
-  text-align: center;
-  flex: 1;
-}
-.file_xsd{
-  margin: 4px;
-  padding: 6px;
-  background-color: lightsteelblue;
-  border: 3px solid red;
-  border-radius: 8px;
-  text-align: center;
-  flex: 1;
-}
-.file_xsd_hide{
-  margin: 4px;
-  padding: 6px;
-  background-color: lightgrey;
-  border: 3px solid grey;
-  border-radius: 8px;
-  text-align: center;
-  flex: 1;
-}
-
-.footer{
-  background-color: #666;
-  text-align: center;
-  font-size: 35px;
-  color: white;
-}
-</style>
+</head>
 <body onload="fetchImxVersions();">
 <div class="container">
 	<div class="header">

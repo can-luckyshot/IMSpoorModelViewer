@@ -1,0 +1,48 @@
+<html>
+<head>
+<style>
+.container{
+ display: flex;
+ flex-direction: column;  
+}
+.header{
+  background-color: #666;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+}
+.model-select{
+ display: flex;
+ justify-content: center; 
+}
+.diagram_item {
+  text-align: center;
+  margin: 10px;
+  padding: 20px;
+  width: 500px;
+  background-color: #f1f1f1;
+  border: 3px solid lightsteelblue;  
+  border-radius: 8px;  
+}
+.diagram_item p{font-size: 30px;}
+img {max-width:100%;}
+</style>
+</head>
+	<body>
+	<div class="container">
+		<div class="header">
+			<p>IMX Model Viewer</p>
+		</div>
+		<div class="model-select" >
+			<div class="diagram_item" onClick="location.href='index_radial_tree.html';">
+				<img src="images/radialtree.png"/>
+				<p>Inheritance Radial Tree</p>
+			</div>
+			<div class="diagram_item" onClick="location.href='index_tree.html';">
+				<img src="images/tree.png"/>
+				<p>Inheritance Tree</p>
+			</div>
+		</div>	
+	</div>
+	</body>
+</html>
