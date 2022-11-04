@@ -24,8 +24,7 @@ body{
 }
 .content{
  padding: 10px;
- flex: 4;
- 
+ flex: 4; 
 }
 .nav{
  background-color: #f1f1f1;
