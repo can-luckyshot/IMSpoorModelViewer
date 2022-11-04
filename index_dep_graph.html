@@ -1,0 +1,111 @@
+<html>
+<head>
+<link rel="stylesheet" href="modelviewer.css">
+<script src="tree.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+function fetchImxVersions(){
+    console.log("init versions");
+	const url = 'https://api.github.com/repos/can-luckyshot/IMSpoorModelViewer/contents/data';
+	fetch(url).then(response => response.json()).then(
+		function(data){						
+			var nav = d3.select("#nav_panel").selectAll("div")
+			   .data(data)
+				.enter()
+			   .append("div")
+				   .attr('class','file')
+				   .attr('id',d => d.name)
+				   .on("click",function (e,d){						
+						generateModel(this, d.download_url);
+					  }
+					)
+				   .text(d => d.name);				   
+    });
+}
+
+var activeModelZip;
+var fileStates;
+
+function generateModel(div, url){	
+	console.log(url);
+	fetch(url)       // 1) fetch the url
+    .then(function (response) {                       // 2) filter on 200 OK
+        if (response.status === 200 || response.status === 0) {
+            return Promise.resolve(response.blob());
+        } else {
+            return Promise.reject(new Error(response.statusText));
+        }
+    })
+    .then(JSZip.loadAsync)                            // 3) chain with the zip promise
+    .then(function (zip) {
+		activeModelZip = zip;
+        var files = zip.file(/xsd/);
+		fileStates = files.map(f => ({name: f.name, show: true}));
+		d3.select(div).selectAll("div")
+			   .data(files)
+				.enter()
+			   .append("div")
+				   .attr('class','file_xsd')
+				   .on("click",function (e,file){						
+						toggleXsd(this, file.name);
+						e.stopPropagation();
+					  }
+					)
+				   .text(file => file.name);
+		renderModel();
+	});
+}
+
+function toggleXsd(element,xsdName){
+	var fs = fileStates.find(fs => fs.name === xsdName);
+	console.log(fs);
+	fs.show = !fs.show;
+	if(fs.show){
+		d3.select(element).attr('class','file_xsd')
+	}
+	else{
+		d3.select(element).attr('class','file_xsd_hide')
+	}
+	renderModel();
+}
+
+function renderModel(){	
+	filesToProces = fileStates.filter(f => f.show == true).length;
+	console.log("selected xsd's: "+filesToProces);
+	initTreeModel();		
+	activeModelZip.file(/xsd/).forEach(file => {
+		if(fileStates.find(fs => fs.name === file.name).show){
+			file.async("string").then(function success(text) {
+				var src = file.name;
+				var parser = new DOMParser();
+				var xmlDoc = parser.parseFromString(text, "text/xml");
+				procesXsd(xmlDoc, src);
+			}, function error(e) {console.log(file.name+" "+ e)});
+		}
+		else{
+			console.log('ignoring '+file.name);
+		}
+	});
+}
+</script>
+</head>
+<body onload="fetchImxVersions();">
+<div class="container">
+	<div class="header">
+		<p>IMX Model Viewer</p>
+	</div>
+	<div class="main">
+		<div class="nav" id="nav_panel">
+			<div class="upload" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+				<p>Drop IMX files here</p>
+			</div>			
+		</div>
+		<div class="content" id="model_panel">
+			<p>Selecteer een IMX versie om een overzicht van het model te genereren.</p>
+			<div id="diagram"></div>
+		</div>
+	</div>	
+</div>
+</body>
+</html>
