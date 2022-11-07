@@ -2,6 +2,7 @@ var inheritLinks;
 var roots;
 var notRoots;
 var filesToProces = 0;
+var myColor;
 
 function initTreeModel(){
 	console.log('init model');
@@ -12,14 +13,15 @@ function initTreeModel(){
 	inheritLinks = [];
 	roots = new Set();
 	notRoots = new Set();
-	inheritLinks.push({id: 'root'});
+	inheritLinks.push({id: 'root', model: 'root'});
 }
 
 function renderTree(){
 	console.log('render model');
 	[...roots].forEach((root)=>{		
-		inheritLinks.push({id: root, parentId: 'root'});}
+		inheritLinks.push({id: root, parentId: 'root', model: 'root'});}
 	);
+	var models = new Set(inheritLinks.map(d => d.model));
 	var imxTree = d3.stratify()(inheritLinks);
 	var diagram = Tree(imxTree,{label: d => d.id});
 	document.getElementById('diagram').append(diagram);
@@ -73,7 +75,7 @@ function procesXsd(doc, src){
 		var extension = element.querySelector('extension');
 		if(extension){
 			//console.log('inherit: ' + extension.attributes.base.value + ' <- ' + element.attributes.name.value);
-			inheritLinks.push({id: element.attributes.name.value, parentId: extension.attributes.base.value});
+			inheritLinks.push({id: element.attributes.name.value, parentId: extension.attributes.base.value, model: src});
 			notRoots.add(element.attributes.name.value);
 			if(roots.has(element.attributes.name.value)){
 				//console.log('deleting: '+element.attributes.name.value);
@@ -184,7 +186,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
       .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`);
 
   node.append("circle")
-      .attr("fill", d => d.children ? stroke : fill)
+      .attr("fill", d => myColor(d.data.data.model))
       .attr("r", r);
 
   if (title != null) node.append("title")

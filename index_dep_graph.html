@@ -41,12 +41,12 @@ function generateModel(div, url){
     .then(function (zip) {
 		activeModelZip = zip;
         var files = zip.file(/xsd/);
-		fileStates = files.map(f => ({name: f.name, show: true}));
+		fileStates = files.map(f => ({name: f.name, show: false}));
 		d3.select(div).selectAll("div")
 			   .data(files)
 				.enter()
 			   .append("div")
-				   .attr('class','file_xsd')
+				   .attr('class','file_xsd_hide')
 				   .on("click",function (e,file){						
 						toggleXsd(this, file.name);
 						e.stopPropagation();

@@ -41,12 +41,14 @@ function generateModel(div, url){
     .then(function (zip) {
 		activeModelZip = zip;
         var files = zip.file(/xsd/);
-		fileStates = files.map(f => ({name: f.name, show: true}));
+		myColor = d3.scaleOrdinal().domain(files.map(f => f.name)).range(["#00A5E3","#8DD7BF","#FF96C5","#FF5768","#FFBF65"],"#FC6238","#FFD872","#F2D4CC","#E77577","#6C88C4","#C05780","#FF828B","#E7C582","#00B0BA","#0065A2");
+		fileStates = files.map(f => ({name: f.name, show: true}));		
 		d3.select(div).selectAll("div")
 			   .data(files)
 				.enter()
 			   .append("div")
 				   .attr('class','file_xsd')
+				   .style("background-color",file => myColor(file.name))
 				   .on("click",function (e,file){						
 						toggleXsd(this, file.name);
 						e.stopPropagation();

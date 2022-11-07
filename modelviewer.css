@@ -52,8 +52,7 @@ body{
 }
 .file_xsd{
   margin: 4px;
-  padding: 6px;
-  background-color: lightsteelblue;
+  padding: 6px;  
   border: 3px solid red;
   border-radius: 8px;
   text-align: center;
