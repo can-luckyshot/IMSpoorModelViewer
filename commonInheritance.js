@@ -4,6 +4,8 @@ var notRoots;
 var filesToProces = 0;
 var myColorRange = ["#00A5E3","#8DD7BF","#FF96C5","#FF5768","#FFBF65","#FC6238","#FFD872","#F2D4CC","#E77577","#6C88C4","#C05780","#FF828B","#E7C582","#00B0BA","#0065A2","#00CDAC","#FF6F68","#FFDACC","#FF60A8","#CFF800","#FF5C77","#4DD091","#FFEC59","#FFA23A","#74737A"];
 var fileStates;
+var activeModelZip;
+var initalViewState = true;
 
 function toggleXsd(element,xsdName){
 	var fs = fileStates.find(fs => fs.name === xsdName);
@@ -18,11 +20,11 @@ function toggleXsd(element,xsdName){
 	renderModel();
 }
 
-function renderModel(imxZip){	
+function renderModel(){	
 	filesToProces = fileStates.filter(f => f.show == true).length;
 	console.log("selected xsd's: "+filesToProces);
-	initTreeModel();		
-	imxZip.file(/xsd/).forEach(file => {
+	initGlobals();		
+	activeModelZip.file(/xsd/).forEach(file => {
 		if(fileStates.find(fs => fs.name === file.name).show){
 			file.async("string").then(function success(text) {
 				var src = file.name;
@@ -36,7 +38,7 @@ function renderModel(imxZip){
 		}
 	});
 }
-function initTreeModel(){
+function initGlobals(){
 	console.log('init model');
 	var element = document.getElementById('diagram');
 	while(element.firstElementChild) {
@@ -83,19 +85,20 @@ function generateModelFromUrl(div, url){
 }
 
 function generateModelFromZip(div,zip) {
+	activeModelZip = zip;
 	var files = zip.file(/xsd/);
 	myColor = d3.scaleOrdinal().domain(files.map(f => f.name)).range(myColorRange);
-	fileStates = files.map(f => ({name: f.name, show: true}));		
-	popuplateImxFiles(div, files);
+	fileStates = files.map(f => ({name: f.name, show: initalViewState}));		
+	popuplateImxFiles(div);
 	renderModel(zip);
 }
 
-function popuplateImxFiles(div, files){
+function popuplateImxFiles(div){
 	d3.select(div).selectAll("div")
-		.data(files)
+		.data(fileStates)
 		.enter()
 		.append("div")
-		.attr('class','file_xsd')
+		.attr('class',f => f.show == true ? 'file_xsd':'file_xsd_hide')
 		.style("background-color",file => myColor(file.name))
 		.on("click",function (e,file){						
 				toggleXsd(this, file.name);
@@ -127,7 +130,7 @@ function procesXsd(doc, src){
 	});
 	filesToProces--;
 	if(filesToProces == 0){
-		renderTree();
+		renderGraph();
 	}
 }
 
@@ -177,7 +180,7 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
 
-function renderTree(){
+function renderGraph(){
 	console.log('render model');
 	[...roots].forEach((root)=>{		
 		inheritLinks.push({id: root, parentId: 'root', model: 'root'});}

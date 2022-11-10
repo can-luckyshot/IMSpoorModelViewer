@@ -1,14 +1,14 @@
 var filesToProces = 0;
 var imxObjectRefs = [];
-var width = 1600;
-var height = 900;
+var width = 3000;
+var height = 3000;
 var inheritLinks;
 var roots;
 var notRoots;
-
+var initalViewState = false;
 var tooltipDiv;
 
-function initTreeModel(){
+function initGlobals(){	
 	console.log('init model');
 	tooltipDiv = d3.select("div.tooltip");	
 	var element = document.getElementById('diagram');
@@ -22,59 +22,18 @@ function initTreeModel(){
 	imxObjectRefs = [];
 }
 
-function renderRefs(){
+function renderGraph(){
 	console.log('render model');
 	var chart = buildChart(imxObjectRefs);
 	document.getElementById('diagram').append(chart);
 }
 
-function dropHandler(ev) {
-  console.log('File(s) dropped');
-  ev.preventDefault();
-  initTreeModel();
-  if (ev.dataTransfer.items) {
-	filesToProces = ev.dataTransfer.items.length;
-	for(var i=0; i<filesToProces; i++){
-		var item = ev.dataTransfer.items[i];
-      // If dropped items aren't files, reject them
-      if (item.kind === 'file') {
-        var file = item.getAsFile();
-        console.log(`… file[${i}].name = ${file.name}`);
-		handleXsdFile(file);
-      }
-    }	
-  } else {
-    // Use DataTransfer interface to access the file(s)
-    [...ev.dataTransfer.files].forEach((file, i) => {
-      console.log(`… file[${i}].name = ${file.name}`);	  
-    });
-  }
-}
-
-function handleXsdFile(xsdFile){
-	var reader = new FileReader();
-	reader.onload =	(function (file) {
-		var fileName = file.name;		
-		return function (event) {
-				var text = event.target.result;
-				var src = fileName;
-				var parser = new DOMParser();
-				var xmlDoc = parser.parseFromString(text, "text/xml");
-				procesXsd(xmlDoc, src);
-			};
-		})(xsdFile);
-	reader.onerror = function (event) {
-		console.log('file-error: ' + event.target.error.code);
-	};
-	reader.readAsText(xsdFile);
-}
-
 function procesXsd(doc, src){	
-	buildReferenceLinks(doc);
-	buildInheritenceTree(doc);
+	buildReferenceLinks(doc,src);
+	buildInheritenceTree(doc,src);
 	filesToProces--;
 	if(filesToProces == 0){		
-		renderRefs();
+		renderGraph();
 	}
 }
 
@@ -82,13 +41,12 @@ function integrateInheritedRelations(){
 	
 }
 
-function buildInheritenceTree(doc){
-	var namedElements = doc.querySelectorAll('*[name]');
-	console.log([...namedElements].length + ' elements with name attribute');
+function buildInheritenceTree(doc,src){
+	var namedElements = doc.querySelectorAll('*[name]');	
 	[...namedElements].forEach((element)=> {
 		var extension = element.querySelector('extension');
 		if(extension){			
-			inheritLinks.push({id: element.attributes.name.value, parentId: extension.attributes.base.value});
+			inheritLinks.push({id: element.attributes.name.value, parentId: extension.attributes.base.value, model: src});
 			notRoots.add(element.attributes.name.value);
 			if(roots.has(element.attributes.name.value)){				
 				roots.delete(element.attributes.name.value);				
@@ -101,35 +59,44 @@ function buildInheritenceTree(doc){
 	});
 }
 
-function buildReferenceLinks(doc){
-	var namedElements = doc.querySelectorAll('*[name]');
-	console.log([...namedElements].length + ' elements with name attribute');
+function buildReferenceLinks(doc,src){
+	var namedElements = doc.querySelectorAll('*[name]');	
 	[...namedElements].forEach((element)=> {			
 		var extension = element.querySelector('extension');
 		if(extension){
 			var typeRefs = element.querySelectorAll('ObjectTypeRef');			
 			[...typeRefs].forEach((typeRef)=>{					
 					var refAttr = typeRef.parentNode.parentNode.parentNode;
-					var typeAtrrName = refAttr.attributes.name != null ? refAttr.attributes.name.value : refAttr.attributes.ref.value;
-					imxObjectRefs.push({source: element.attributes.name.value, target: typeRef.textContent,label: typeAtrrName});
+					var typeAttrName = refAttr.attributes.name != null ? refAttr.attributes.name.value : refAttr.attributes.ref.value;
+					imxObjectRefs.push({source: element.attributes.name.value, target: typeRef.textContent,label: typeAttrName, model: src});
 				}			
 			)
 		};		
 	});
 }
 
-function dragOverHandler(ev) {
-  console.log('File(s) in drop zone');
 
-  // Prevent default behavior (Prevent file from being opened)
-  ev.preventDefault();
-}
 
 function buildChart(){
   const links = imxObjectRefs;
-  const namesMap = imxObjectRefs.flatMap(l => [l.source, l.target]);
-  const nodeSet = new Set(namesMap);
-  const nodes = Array.from(nodeSet, id => ({id}));
+  const knownNodes = new Set(imxObjectRefs.map(l => l.source));
+  const sourceNodes = imxObjectRefs.map(l => l.source+' '+l.model);
+  const targetNodes = imxObjectRefs.map(l => l.target+' '+'unknown');
+  const nodeConcats = new Set(sourceNodes);    
+  targetNodes.forEach(item => nodeConcats.add(item));  
+  const nodes = [];
+  nodeConcats.forEach(function(n){
+	const a = n.split(' ');
+	const weight = imxObjectRefs.filter(l => l.target == a[0]).length;
+	if(a[1]=='unknown' && knownNodes.has(a[0])){
+		
+	}
+	else{
+		nodes.push({id: a[0], model: a[1], weight: weight});
+	}
+  });
+  console.log('rendering '+nodes.length+' nodes');
+	
 
   const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id))
@@ -141,6 +108,8 @@ function buildChart(){
 
   const svg = d3.create("svg")
       .attr("viewBox", [-width / 2, -height / 2, width, height])
+	  .attr("width", width)
+      .attr("height", height)
       .style("font", "12px sans-serif");
 
   // Per-type markers, as they don't inherit styles.
@@ -167,7 +136,7 @@ function buildChart(){
       .attr("stroke", "#555")
 	  .attr("stroke-opacity", 0.4)
       .attr("marker-end", "url(#arrow)")
-	  .on("mouseover",handleHover) ;
+	  .on("mouseover",handleHover).on("mouseexit",handleExit) ;
 
   const node = svg.append("g")
       .attr("fill", "currentColor")
@@ -180,8 +149,10 @@ function buildChart(){
 
   node.append("circle")
       .attr("stroke", "white")
+	  .attr("fill", d => myColor(d.model))
+	  .attr("opacity", 0.6)
       .attr("stroke-width", 1.5)
-      .attr("r", 4);
+      .attr("r", d => Math.max(6,d.weight));
 
   node.append("text")
       .attr("x", 8)
@@ -200,17 +171,22 @@ function buildChart(){
 }
 
 function handleHover(event, d){		
-		const[x, y] = d3.pointer(event,d);
-		tooltipDiv.transition()
-			.duration(500)	
-			.style("opacity", 0);
-		tooltipDiv.transition()
-			.duration(200)	
-			.style("opacity", .9);	
-		tooltipDiv.html(d.label)	 
-			.style("left", (x) + "px")			 
-			.style("top", (y - 28) + "px");
-	  }
+	const[x, y] = d3.pointer(event,d);
+	//tooltipDiv.transition().duration(500).style("opacity", 0);
+	tooltipDiv.transition().duration(200).style("opacity", .9);	
+	tooltipDiv.html(d.label)	 
+		.style("left", (x) + "px")			 
+		.style("top", (y - 28) + "px");
+}
+
+function handleExit(event, d){		
+	const[x, y] = d3.pointer(event,d);
+	tooltipDiv.transition()
+		.duration(500)	
+		.style("opacity", 0);
+	tooltipDiv.html('');
+}
+
 
 function linkStraight(d){
   return `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`;
