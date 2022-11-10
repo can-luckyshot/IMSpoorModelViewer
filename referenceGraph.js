@@ -1,11 +1,11 @@
 var filesToProces = 0;
 var imxObjectRefs = [];
-var width = 3000;
-var height = 3000;
+var width = 2800;
+var height = 2800;
 var inheritLinks;
 var roots;
 var notRoots;
-var initalViewState = false;
+var initalViewState = true;
 var tooltipDiv;
 
 function initGlobals(){	
