@@ -1,0 +1,39 @@
+<html>
+<head>
+<link rel="stylesheet" href="modelviewer.css">
+<script src="commonInheritance.js"></script>
+<script src="referenceViewer.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+div.tooltip {
+  position: absolute;	
+  text-align: center;	  	
+  padding: 6px;	
+  font: 14px sans-serif;	
+  background: lightsteelblue;	
+  border: 0px;					
+  border-radius: 8px;	
+}
+</style>
+</head>
+<body onload="fetchImxVersions();">
+<div class="container">
+	<div class="header">
+		<p>IMX Model Viewer</p>
+	</div>
+	<div class="main">
+		<div class="nav" id="nav_panel">
+			<div class="upload" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+				<p>Drop IMX files here</p>
+			</div>			
+		</div>
+		<div class="content" id="model_panel">
+			<p>Selecteer een IMX versie om een overzicht van het model te genereren.</p>
+			<div id="diagram"></div>
+			<div class="tooltip" style="opacity: 0">
+		</div>
+	</div>	
+</div>
+</body>
+</html>
