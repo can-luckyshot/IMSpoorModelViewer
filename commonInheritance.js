@@ -56,7 +56,7 @@ function fetchImxVersions(){
 	const url = 'https://api.github.com/repos/can-luckyshot/IMSpoorModelViewer/contents/data';
 	fetch(url).then(response => response.json()).then(
 		function(data){						
-			var nav = d3.select("#nav_panel").selectAll("div")
+			var nav = d3.select("#nav_panel").selectAll("div.nav")
 			   .data(data)
 				.enter()
 			   .append("div")
