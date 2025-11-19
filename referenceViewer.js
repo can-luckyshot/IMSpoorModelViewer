@@ -1,5 +1,6 @@
 var filesToProces = 0;
 var imxObjectRefs = [];
+var imxObjects = [];
 var width = 1000;
 var height = 500;
 var inheritLinks;
@@ -16,6 +17,7 @@ function initGlobals(){
 		element.firstElementChild.remove();
 	}
 	inheritLinks = [];
+	imxObjects = [];
 	roots = new Set();
 	notRoots = new Set();
 	inheritLinks.push({id: 'root'});
@@ -31,10 +33,40 @@ function renderGraph(){
 function procesXsd(doc, src){	
 	buildReferenceLinks(doc,src);
 	buildInheritenceTree(doc,src);
+	imxObjects.push(...getImxObjects(doc,src));
 	filesToProces--;
-	if(filesToProces == 0){		
-		renderGraph();
+	if(filesToProces == 0){
+		imxObjects.sort((a, b) => a.name.localeCompare(b.name));
+		populateTypeList();
+		renderGraph();		
 	}
+}
+
+function populateTypeList(){
+	var nav = d3.select("div.typelist").selectAll("div").remove();
+	var nav = d3.select("div.typelist").selectAll("div")
+	   .data(imxObjects)
+		.enter()
+	   .append("div")
+		   .attr('class','file')
+		   .attr('id',d => d.name)
+		   .on("click",function (e,d){						
+				console.log('show: '+d.name);
+			  }
+			)
+		   .text(d => d.name);
+}
+
+function getImxObjects(doc,src){
+	var types = [];
+	var namedElements = doc.querySelectorAll('*[name]');	
+	[...namedElements].forEach((element)=> {
+		var extension = element.querySelector('extension');
+		if(extension){			
+			types.push({name: element.attributes.name.value, parentId: extension.attributes.base.value, model: src});			
+		}
+	});
+	return types;
 }
 
 function integrateInheritedRelations(){
