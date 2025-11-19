@@ -31,6 +31,14 @@ body{
  padding: 10px;
  flex: 1; 
 }
+.list{
+  flex: 1; 
+}
+.label{
+  margin: 4px;
+  padding: 6px;
+  flex: 1; 
+}
 .upload {
   text-align: center;
   margin: 4px;
@@ -51,20 +59,24 @@ body{
   flex: 1;
 }
 .file_xsd{
+  display: flex;
   margin: 4px;
-  padding: 6px;  
-  border: 3px solid red;
+  background-color: lightgrey;
+  border: 3px solid lightgrey;
   border-radius: 8px;
   text-align: center;
+  flex-direction: row nowrap;
+  align-items: center;
   flex: 1;
 }
 .file_xsd_hide{
+	display: flex;
   margin: 4px;
-  padding: 6px;
-  background-color: lightgrey;
-  border: 3px solid grey;
+  border: 3px solid lightgrey;
   border-radius: 8px;
   text-align: center;
+  flex-direction: row nowrap;
+  align-items: center;
   flex: 1;
 }
 
@@ -73,5 +85,53 @@ body{
   text-align: center;
   font-size: 35px;
   color: white;
+}
+
+.dropbtn {
+  margin: 4px;
+  padding: 6px;
+  background-color: lightsteelblue;
+  border: 3px solid lightsteelblue;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  flex: 1;
+}
+
+.dropdown {
+  margin: 4px;
+  padding: 6px;
+  background-color: lightsteelblue;
+  border: 3px solid lightsteelblue;
+  border-radius: 8px;
+  text-align: center;
+  flex: 1;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {  
+  display: block;
+}
+
+.dropdown:hover  {
+  background-color: lightblue;
 }
 </style>

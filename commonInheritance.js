@@ -55,22 +55,23 @@ function fetchImxVersions(){
     console.log("init versions");
 	const url = 'https://api.github.com/repos/can-luckyshot/IMSpoorModelViewer/contents/data';
 	fetch(url).then(response => response.json()).then(
-		function(data){						
-			var nav = d3.select("#nav_panel").selectAll("div.nav")
-			   .data(data)
+		function(data){
+			console.log("dropdown" + d3.selectAll("dropbtn"));
+			var nav = d3.select("#version_dropdown").selectAll("div")
+				.data(data)
 				.enter()
-			   .append("div")
-				   .attr('class','file')
-				   .attr('id',d => d.name)
-				   .on("click",function (e,d){						
-						generateModelFromUrl(this, d.download_url);
-					  }
+				.append("a")
+					.attr('href','#')
+					.attr('id',d => d.name)
+					.on("click",function (e,d){						
+						generateModelFromUrl(d.download_url);
+						}
 					)
-				   .text(d => d.name);				   
+					.text(d => d.name);				   
     });
 }
 
-function generateModelFromUrl(div, url){	
+function generateModelFromUrl(url){	
 	console.log(url);
 	fetch(url) // 1) fetch the url
     .then(function (response) { // 2) filter on 200 OK
@@ -81,31 +82,45 @@ function generateModelFromUrl(div, url){
         }
     })
     .then(JSZip.loadAsync) // 3) chain with the zip promise
-    .then(zip => generateModelFromZip(div,zip));
+    .then(zip => generateModelFromZip(zip));
 }
 
-function generateModelFromZip(div,zip) {
+function generateModelFromZip(zip) {
 	activeModelZip = zip;
 	var files = zip.file(/xsd/);
 	myColor = d3.scaleOrdinal().domain(files.map(f => f.name)).range(myColorRange);
 	fileStates = files.map(f => ({name: f.name, show: initalViewState}));		
-	popuplateImxFiles(div);
+	popuplateImxFiles();
 	renderModel(zip);
 }
 
-function popuplateImxFiles(div){
-	d3.select(div).selectAll("div")
+function popuplateImxFiles(){
+	d3.select("#xsd_list").selectAll("div").remove();
+	d3.select("#xsd_list").selectAll("div")
 		.data(fileStates)
 		.enter()
-		.append("div")
-		.attr('class',f => f.show == true ? 'file_xsd':'file_xsd_hide')
-		.style("background-color",file => myColor(file.name))
+		.append(f => createXsdItem(f));			
+}
+
+function createXsdItem(file){
+	var item = d3.create("div");
+	item.attr('class',file.show == true ? 'file_xsd':'file_xsd_hide')		
 		.on("click",function (e,file){						
 				toggleXsd(this, file.name);
 				e.stopPropagation();
-			}
-		)
-		.text(file => file.name);
+				}
+			);
+	item.append("svg")
+		.attr("width", 20)
+		.attr("height", 20)
+		.append("g")			
+			.append("circle")
+				.attr("r", 10)
+				.attr("cx", 10)
+				.attr("cy", 10)				
+				.attr("fill",myColor(file.name));
+	item.append('p').text(file.name);
+	return item.node();
 }
 
 function procesXsd(doc, src){	

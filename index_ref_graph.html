@@ -26,7 +26,16 @@ div.tooltip {
 		<div class="nav" id="nav_panel">
 			<div class="upload" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 				<p>Drop IMX files here</p>
-			</div>			
+			</div>
+			<div class="dropdown" >
+				<p>Kies een IMX versie</p>
+				<div class="dropdown-content" id="version_dropdown"></div>
+			</div>
+			<div class="list">
+				<div class="label"><p>Xsd's</p></div>
+				<div class="xsdlist" id="xsd_list"></div>
+			</div>
+			
 		</div>
 		<div class="content" id="model_panel">
 			<p>Selecteer een IMX versie om een overzicht van het model te genereren.</p>
